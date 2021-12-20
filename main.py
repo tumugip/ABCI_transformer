@@ -21,6 +21,17 @@ from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 # from sklearn.model_selection import cross_val_score
 from timeit import default_timer as timer
+import argparse  
+
+#オプションを設定する
+parser = argparse.ArgumentParser(description='Using mT5 with ABCI')
+parser.add_argument('input_file', help='corpus')
+parser.add_argument('-e','--epochs', help='epochs',type=int,default=50)
+parser.add_argument('--zip', action='store_true',help='Save the model as a zip file')
+parser.add_argument('--result',action='store_true',help='Output the result as a tsv file')    
+
+args = parser.parse_args() 
+
 
 #関数の定義
 
@@ -372,7 +383,8 @@ torch.cuda.manual_seed(SEED)
 # torch.backends.cudnn.deterministic = True
 # torch.use_deterministic_algorithms(True)
 
-INPUT_tsv = 'corpus_Python-JPN/Corpus-DS/DS_B.tsv'
+INPUT_tsv = args.input_file
+# INPUT_tsv = 'corpus_Python-JPN/Corpus-DS/DS_B.tsv'
 # INPUT_tsv = 'corpus_Python-JPN/forPRO/py.tsv'
 
 OUTPUT_tsv = 'result_DS_B.tsv'
@@ -481,7 +493,7 @@ for ln in [SRC_LANGUAGE, TGT_LANGUAGE]:
 
 
 
-NUM_EPOCHS = 1
+NUM_EPOCHS = args.epochs
 CNT = 0
 
 best_val_loss = float('inf')
@@ -545,3 +557,13 @@ for test_sentence in test_iter:
 
 
 df.to_csv(OUTPUT_tsv, index=False, header=False, sep='\t', quoting=csv.QUOTE_NONE, doublequote=False, escapechar='\n')
+
+
+if args.zip == True:
+        df.to_csv(OUTPUT_tsv, index=False, header=False, sep='\t', quoting=csv.QUOTE_NONE, doublequote=False, escapechar='\n')
+elif args.result==True:
+    print('pass')
+    # shutil.make_archive(f'model_{INPUT_tsv_name}_forMT5','zip',root_dir='model')
+else:
+    df.to_csv(OUTPUT_tsv, index=False, header=False, sep='\t', quoting=csv.QUOTE_NONE, doublequote=False, escapechar='\n')
+    # shutil.make_archive(f'model_{INPUT_tsv_name}_forMT5','zip',root_dir='model')
