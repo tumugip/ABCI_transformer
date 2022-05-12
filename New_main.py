@@ -584,7 +584,7 @@ if __name__ == '__main__':
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            torch.save(transformer.state_dict(), f'{TRAIN_tsv}-model.pt')
+            torch.save(transformer.state_dict(), f'{INPUT_train_tsv_name}-model.pt')
             # torch.save(transformer.state_dict(), 'tut6-model.pt')
             CNT = 0
         else:
@@ -596,7 +596,7 @@ if __name__ == '__main__':
 
         print((f"Epoch: {epoch}, Train loss: {train_loss:.3f}, Val loss: {val_loss:.3f}, "f"Epoch time = {(end_time - start_time):.3f}s"))
 
-    transformer.load_state_dict(torch.load(f'{TRAIN_tsv}-model.pt'))
+    transformer.load_state_dict(torch.load(f'{INPUT_train_tsv_name}-model.pt'))
     # transformer.load_state_dict(torch.load('tut6-model.pt'))
 
     # 学習済みモデルのパラメータ数
@@ -609,11 +609,11 @@ if __name__ == '__main__':
 
 
     # ボキャブのセーブ
-    torch.save(vocab_transform, f'vocab_obj_{TRAIN_tsv}.pth')
+    torch.save(vocab_transform, f'vocab_obj_{INPUT_train_tsv_name}.pth')
     # torch.save(vocab_transform, 'vocab_obj_DS-B.pth')
 
     # モデルのセーブ
-    torch.save(transformer.state_dict(), f'model_{TRAIN_tsv}.pt')
+    torch.save(transformer.state_dict(), f'model_{INPUT_train_tsv_name}.pt')
     # torch.save(transformer.state_dict(), 'model_DS-B.pt')
 
 
@@ -646,7 +646,7 @@ if __name__ == '__main__':
     for train_sentence in train_iter:
         pred, _ = translate(transformer, train_sentence[0], BEAMSIZE)
         if len(pred) != 0:
-            df = df.append({'source': train_sentence[0], 'target': train_sentence[1].strip(), 'pred': pred[0].strip()}, ignore_index=True)
+            df_train = df_train.append({'source': train_sentence[0], 'target': train_sentence[1].strip(), 'pred': pred[0].strip()}, ignore_index=True)
 
     for test_sentence in test_iter:
         pred, _ = translate(transformer, test_sentence[0], BEAMSIZE)
