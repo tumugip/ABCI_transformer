@@ -449,7 +449,21 @@ if __name__ == '__main__':
     # INPUT_tsv = 'corpus_Python-JPN/Corpus-DS/DS_B.tsv'
     # INPUT_tsv = 'corpus_Python-JPN/forPRO/py.tsv'
 
-    OUTPUT_tsv = 'result_DS_B.tsv'
+
+    #train_fileとtest_fileのresultを出すための色々
+
+    INPUT_train_tsv = TRAIN_tsv[TRAIN_tsv.rfind('/')+1:]
+    INPUT_train_tsv_name = INPUT_train_tsv.replace('.tsv', '')
+    OUTPUT_train_tsv = f'result_{INPUT_train_tsv_name}_forTransformer.tsv'
+
+
+    INPUT_test_tsv = TEST_tsv[TEST_tsv.rfind('/')+1:]
+    INPUT_test_tsv_name = INPUT_test_tsv.replace('.tsv', '')
+    OUTPUT_test_tsv = f'result_{INPUT_test_tsv_name}_forTransformer.tsv'
+
+    # OUTPUT_tsv = 'result_DS_B.tsv'
+
+
     BEAMSIZE = 5
 
     # SRC (source) : 原文
@@ -608,24 +622,46 @@ if __name__ == '__main__':
     for pred, prob in zip(pred_list, prob_list):
         print('predicted tgt :', pred, prob)
 
-
+    train_iter = JPN2Py(root='data', split='train', language_pair=(SRC_LANGUAGE, TGT_LANGUAGE))
     test_iter = JPN2Py(root='data', split='test', language_pair=(SRC_LANGUAGE, TGT_LANGUAGE))
+    # test_iter = JPN2Py(root='data', split='test', language_pair=(SRC_LANGUAGE, TGT_LANGUAGE))
 
     cols = ['source', 'target', 'pred']
-    df = pd.DataFrame(index=[], columns=cols)
+    
+    # df = pd.DataFrame(index=[], columns=cols)
+    df_train = pd.DataFrame(index=[], columns=cols)
+    df_test = pd.DataFrame(index=[], columns=cols)
+
+
+    # for test_sentence in test_iter:
+    #     pred, _ = translate(transformer, test_sentence[0], BEAMSIZE)
+    #     if len(pred) != 0:
+    #         df = df.append({'source': test_sentence[0], 'target': test_sentence[1].strip(), 'pred': pred[0].strip()}, ignore_index=True)
+
+
+    for train_sentence in train_iter:
+        pred, _ = translate(transformer, train_sentence[0], BEAMSIZE)
+        if len(pred) != 0:
+            df = df.append({'source': train_sentence[0], 'target': train_sentence[1].strip(), 'pred': pred[0].strip()}, ignore_index=True)
 
     for test_sentence in test_iter:
         pred, _ = translate(transformer, test_sentence[0], BEAMSIZE)
         if len(pred) != 0:
-            df = df.append({'source': test_sentence[0], 'target': test_sentence[1].strip(), 'pred': pred[0].strip()}, ignore_index=True)
+            df_test = df_test.append({'source': test_sentence[0], 'target': test_sentence[1].strip(), 'pred': pred[0].strip()}, ignore_index=True)
+
+
 
 
     
     if args.zip == True:
-        df.to_csv(OUTPUT_tsv, index=False, header=False, sep='\t', quoting=csv.QUOTE_NONE, doublequote=False, escapechar='\n')
+        df_train.to_csv(OUTPUT_train_tsv, index=False, header=False, sep='\t', quoting=csv.QUOTE_NONE, doublequote=False, escapechar='\n')
+        df_test.to_csv(OUTPUT_test_tsv, index=False, header=False, sep='\t', quoting=csv.QUOTE_NONE, doublequote=False, escapechar='\n')
+        # df.to_csv(OUTPUT_tsv, index=False, header=False, sep='\t', quoting=csv.QUOTE_NONE, doublequote=False, escapechar='\n')
     elif args.result==True:
         print('pass')
         # shutil.make_archive(f'model_{INPUT_tsv_name}_forMT5','zip',root_dir='model')
     else:
-        df.to_csv(OUTPUT_tsv, index=False, header=False, sep='\t', quoting=csv.QUOTE_NONE, doublequote=False, escapechar='\n')
+        df_train.to_csv(OUTPUT_train_tsv, index=False, header=False, sep='\t', quoting=csv.QUOTE_NONE, doublequote=False, escapechar='\n')
+        df_test.to_csv(OUTPUT_test_tsv, index=False, header=False, sep='\t', quoting=csv.QUOTE_NONE, doublequote=False, escapechar='\n')
+        # df.to_csv(OUTPUT_tsv, index=False, header=False, sep='\t', quoting=csv.QUOTE_NONE, doublequote=False, escapechar='\n')
         # shutil.make_archive(f'model_{INPUT_tsv_name}_forMT5','zip',root_dir='model')
