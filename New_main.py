@@ -477,7 +477,7 @@ if __name__ == '__main__':
 
     # トークナイザの定義
     MAX_LEN=80
-    tokenizer = Tokenizer("user_simpledic.csv", udic_type="simpledic", udic_enc="utf8", wakati=True)
+    tokenizer = Tokenizer("/ABCI_transformer/user_simpledic.csv", udic_type="simpledic", udic_enc="utf8", wakati=True)
 
     # Place-holder に各トークナイザを格納
     token_transform[SRC_LANGUAGE] = jpn_tokenizer
