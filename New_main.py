@@ -584,7 +584,8 @@ if __name__ == '__main__':
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            torch.save(transformer.state_dict(), 'tut6-model.pt')
+            torch.save(transformer.state_dict(), f'{TRAIN_tsv}-model.pt')
+            # torch.save(transformer.state_dict(), 'tut6-model.pt')
             CNT = 0
         else:
             CNT += 1
@@ -595,7 +596,8 @@ if __name__ == '__main__':
 
         print((f"Epoch: {epoch}, Train loss: {train_loss:.3f}, Val loss: {val_loss:.3f}, "f"Epoch time = {(end_time - start_time):.3f}s"))
 
-    transformer.load_state_dict(torch.load('tut6-model.pt'))
+    transformer.load_state_dict(torch.load(f'{TRAIN_tsv}-model.pt'))
+    # transformer.load_state_dict(torch.load('tut6-model.pt'))
 
     # 学習済みモデルのパラメータ数
     params = 0
@@ -607,10 +609,12 @@ if __name__ == '__main__':
 
 
     # ボキャブのセーブ
-    torch.save(vocab_transform, 'vocab_obj_DS-B.pth')
+    torch.save(vocab_transform, f'vocab_obj_{TRAIN_tsv}.pth')
+    # torch.save(vocab_transform, 'vocab_obj_DS-B.pth')
 
     # モデルのセーブ
-    torch.save(transformer.state_dict(), 'model_DS-B.pt')
+    torch.save(transformer.state_dict(), f'model_{TRAIN_tsv}.pt')
+    # torch.save(transformer.state_dict(), 'model_DS-B.pt')
 
 
     # 翻訳したい原文を入力
@@ -627,7 +631,7 @@ if __name__ == '__main__':
     # test_iter = JPN2Py(root='data', split='test', language_pair=(SRC_LANGUAGE, TGT_LANGUAGE))
 
     cols = ['source', 'target', 'pred']
-    
+
     # df = pd.DataFrame(index=[], columns=cols)
     df_train = pd.DataFrame(index=[], columns=cols)
     df_test = pd.DataFrame(index=[], columns=cols)
