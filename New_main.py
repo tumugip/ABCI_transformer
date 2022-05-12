@@ -53,12 +53,11 @@ def tokenize_pycode(code):
         ss=[]
         tokens = tokenize(BytesIO(code.encode('utf-8')).readline)
         for toknum, tokval, _, _, _ in tokens:
-            if toknum != 62 and tokval != '':
+            if toknum != 62 and tokval != '' and tokval != 'utf-8':
                 ss.append(tokval)
         return ss
     except:
         return pattern.split(code)
-
 
 # tsv ファイルから train/valid/test それぞれのファイルを作成する関数
 def from_tsv(train_path,test_path):
