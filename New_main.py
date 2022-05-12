@@ -43,8 +43,22 @@ args = parser.parse_args()
 def jpn_tokenizer(text):
   return [token for token in tokenizer.tokenize(text) if token != " " and len(token) != 0]   # 句点も返さなくて良いかも
 
-def py_tokenizer(text):
-  return [tok for tok in text.split()][:MAX_LEN]
+# def py_tokenizer(text):
+#   return [tok for tok in text.split()][:MAX_LEN]
+
+pattern = re.compile(r'[\(, .\+\-\)]')
+
+def tokenize_pycode(code):
+    try:
+        ss=[]
+        tokens = tokenize(BytesIO(code.encode('utf-8')).readline)
+        for toknum, tokval, _, _, _ in tokens:
+            if toknum != 62 and tokval != '':
+                ss.append(tokval)
+        return ss
+    except:
+        return pattern.split(code)
+
 
 # tsv ファイルから train/valid/test それぞれのファイルを作成する関数
 def from_tsv(train_path,test_path):
@@ -454,11 +468,13 @@ if __name__ == '__main__':
 
     # Place-holder に各トークナイザを格納
     token_transform[SRC_LANGUAGE] = jpn_tokenizer
-    token_transform[TGT_LANGUAGE] = py_tokenizer
+    token_transform[TGT_LANGUAGE] = tokenize_pycode
+    # token_transform[TGT_LANGUAGE] = py_tokenizer
 
     # kf = KFold(n_splits=3, shuffle=True, random_state=0)
 
-    NUM_LINES = from_tsv(INPUT_tsv)
+    # NUM_LINES = from_tsv(INPUT_tsv)
+    NUM_LINES = from_tsv(TRAIN_tsv,TEST_tsv)
     #   NUM_LINES = from_tsv_except_test(INPUT_tsv)
 
     print(NUM_LINES)
