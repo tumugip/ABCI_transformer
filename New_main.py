@@ -26,7 +26,7 @@ from io import BytesIO
 from tokenize import tokenize, open
 import re
 
-#オプションを設定する
+# オプションを設定する
 parser = argparse.ArgumentParser(description='Using mT5 with ABCI')
 # parser.add_argument('input_file', help='corpus')
 parser.add_argument('train_file', help='train_file')
